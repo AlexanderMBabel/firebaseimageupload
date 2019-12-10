@@ -1,2 +1,7 @@
 # firebase image upload
-testing react node image uploading with firebase
+testing react node image uploading with different methods:
+firebase
+multer
+base64
+
+
