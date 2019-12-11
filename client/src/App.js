@@ -17,13 +17,13 @@ import Button from '@material-ui/core/Button';
 
 import './App.css';
 
-const defaultImage = 'https://picsum.image/300';
+const defaultImage = 'https://picsum.photos/300';
 const apiUrl = 'http://localhost:4000';
 
 const useStyles = makeStyles({
   card: {
     textAlign: 'center',
-    alignContent: 'center'
+    margin: 35
   },
   center: {
     textAlign: 'center'
@@ -46,15 +46,15 @@ function App() {
       let imageFormObj = new FormData();
       imageFormObj.append('imageName', 'multer-image-' + Date.now());
       imageFormObj.append('imageData', e.target.files[0]);
-
+      console.log(URL.createObjectURL(e.target.files[0]));
       setMulterImage(URL.createObjectURL(e.target.files[0]));
 
       axios
         .post(`${apiUrl}/api/imageupload/uploadmulter`, imageFormObj)
         .then(data => {
           if (data.data.success) {
-            alert('Imagehas been successfully uploaded using multer');
-            setMulterImage(defaultImage);
+            console.log(data.data.document.imageData);
+            // setMulterImage(data.data.document.imageData);
           }
         })
         .catch(err => {
@@ -62,6 +62,53 @@ function App() {
           setMulterImage(defaultImage);
         });
     }
+    //  else if (method === 'firebase') {
+    //   let currentImageName = 'firebase-image-' + Date.now();
+
+    //   let uploadImage = storage
+    //     .ref(`images/${currentImageName}`)
+    //     .put(e.target.files[0]);
+
+    //   uploadImage.on(
+    //     'state_changed',
+    //     snapshot => {},
+    //     error => {
+    //       alert(error);
+    //     },
+    //     () => {
+    //       storage
+    //         .ref('images')
+    //         .child(currentImageName)
+    //         .getDownloadURL()
+    //         .then(url => {
+    //           this.setState({
+    //             firebaseImage: url
+    //           });
+
+    //           // store image object in the database
+    //           imageObj = {
+    //             imageName: currentImageName,
+    //             imageData: url
+    //           };
+
+    //           axios
+    //             .post(`${API_URL}/image/uploadbase`, imageObj)
+    //             .then(data => {
+    //               if (data.data.success) {
+    //                 alert(
+    //                   'Image has been successfully uploaded using firebase storage'
+    //                 );
+    //                 this.setDefaultImage('firebase');
+    //               }
+    //             })
+    //             .catch(err => {
+    //               alert('Error while uploading image using firebase storage');
+    //               this.setDefaultImage('firebase');
+    //             });
+    //         });
+    //     }
+    //   );
+    // }
   };
   return (
     <div>
@@ -73,13 +120,13 @@ function App() {
             direction='column'
             alignItems='center'
             justify='center'
-            style={{ height: '30vh' }}
+            style={{ height: '50vh' }}
           >
             <Grid item xs={3}>
               <Typography variant='h4' component='h4'>
                 Upload an Image via Multer
               </Typography>
-              <FormControl onSubmit={uploadImage('multer')}>
+              <FormControl>
                 <InputLabel htmlFor='add-multer-image'>Add an image</InputLabel>
                 <Input
                   id='add-multer-image'
@@ -97,6 +144,44 @@ function App() {
                   Submit
                 </Button>
               </FormControl>
+              <img src={multerImage} alt='multer' style={{ width: 300 }} />
+            </Grid>
+          </Grid>
+        </Card>
+        <Card className={classes.card}>
+          <Grid
+            container
+            spacing={0}
+            direction='column'
+            alignItems='center'
+            justify='center'
+            style={{ height: '50vh' }}
+          >
+            <Grid item xs={3}>
+              <Typography variant='h4' component='h4'>
+                Upload an Image via Firebase
+              </Typography>
+              <FormControl>
+                <InputLabel htmlFor='add-firebase-image'>
+                  Add an image
+                </InputLabel>
+                <Input
+                  id='add-firebase-image'
+                  type='file'
+                  onChange={e => uploadImage(e, 'firebase')}
+                ></Input>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  type='submit'
+                  style={{
+                    margin: 10
+                  }}
+                >
+                  Submit
+                </Button>
+              </FormControl>
+              <img src={firebaseImage} alt='firebase' style={{ width: 300 }} />
             </Grid>
           </Grid>
         </Card>
